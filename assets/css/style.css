@@ -734,14 +734,7 @@ nav {
     margin-bottom: 0;
 }
 
-/* Security Content Layout */
-.security-content {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 3rem;
-    margin-top: 3rem;
-    align-items: start;
-}
+/* Security Content Layout - uses flex from earlier definition */
 
 .security-nav {
     position: sticky;
@@ -999,7 +992,7 @@ nav {
 /* Feature Grid */
 .feature-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
     gap: 2rem;
     margin: 2rem 0;
 }
@@ -1033,6 +1026,7 @@ nav {
     display: flex;
     gap: 0;
     box-shadow: var(--box-shadow);
+    position: relative;
     border-radius: var(--border-radius);
     overflow: hidden;
 }
@@ -1152,7 +1146,7 @@ nav {
 /* Issues Grid */
 .issues-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(380px, 100%), 1fr));
     gap: var(--space-6);
     margin: var(--space-8) 0;
 }
@@ -1641,14 +1635,13 @@ footer::before {
     }
     
     .security-content {
-        grid-template-columns: 280px 1fr;
         gap: 2rem;
     }
 }
 
 @media (max-width: 1024px) {
     .security-content {
-        grid-template-columns: 1fr;
+        flex-direction: column;
         gap: 1rem;
     }
     
@@ -1657,10 +1650,12 @@ footer::before {
         top: 0;
         max-height: none;
         order: 2;
+        width: 100%;
     }
     
     .security-main {
         order: 1;
+        width: 100%;
     }
     
     .hero h1 {
@@ -1764,6 +1759,18 @@ footer::before {
     .search-bar input,
     .search-bar button {
         border-radius: var(--border-radius-3);
+    }
+
+    .search-hint {
+        display: none;
+    }
+
+    .search-bar input {
+        padding: 0.75rem 1rem;
+    }
+
+    .search-bar button {
+        padding: 0.75rem 1rem;
     }
     
     /* Timeline Mobile Styles */
@@ -1905,6 +1912,79 @@ footer::before {
     .filter-btn {
         padding: 0.6rem 1.2rem;
         font-size: 0.9rem;
+    }
+
+    .hero-stats {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-4);
+    }
+
+    .hero-stat-value {
+        font-size: var(--font-size-6);
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .search-hint {
+        display: none;
+    }
+
+    .card-actions {
+        flex-direction: column;
+    }
+
+    .card-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .form-section {
+        padding: var(--space-4);
+    }
+
+    .note,
+    .warning,
+    .danger {
+        padding: 1rem;
+    }
+
+    .architecture-diagram {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .container {
+        padding: 0 0.5rem;
+    }
+
+    .hero h1 {
+        font-size: 1.5rem;
+    }
+
+    .hero p {
+        font-size: var(--font-size-3);
+    }
+
+    .security-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .stat-card .stat-value {
+        font-size: var(--font-size-6);
+    }
+
+    .filter-btn {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .meta-info {
+        flex-direction: column;
+        gap: var(--space-2);
     }
 }
 
@@ -2613,7 +2693,7 @@ a:focus {
 /* Taxonomy Grid */
 .taxonomy-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr));
     gap: var(--space-5);
 }
 
@@ -2735,7 +2815,7 @@ a:focus {
 /* Cisco Mapping Grid */
 .cisco-mapping-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(380px, 100%), 1fr));
     gap: var(--space-5);
 }
 
@@ -3745,7 +3825,7 @@ mark {
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
     gap: var(--space-5);
     margin-bottom: var(--space-8);
 }
@@ -3785,7 +3865,7 @@ mark {
 
 .chart-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(400px, 100%), 1fr));
     gap: var(--space-6);
 }
 
@@ -3809,7 +3889,7 @@ mark {
 
 .cisco-heatmap {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
     gap: var(--space-3);
 }
 
@@ -3838,6 +3918,9 @@ mark {
         grid-template-columns: 1fr;
     }
     .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+    }
+    .cisco-heatmap {
         grid-template-columns: repeat(2, 1fr);
     }
 }
