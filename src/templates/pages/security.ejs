@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', { meta: meta, currentPage: 'security' }) %>
+</head>
+<body>
+    <%- include('../partials/header', { currentPage: 'security' }) %>
+    
+    <div class="container" id="main-content">
+        <div class="security-header">
+            <h1>Understanding MCP Security</h1>
+            <p>A comprehensive guide to securing Model Context Protocol implementations and preventing vulnerabilities</p>
+        </div>
+        
+        <div class="security-content">
+            <div class="security-nav">
+                <h3>Contents</h3>
+                <ul>
+                    <li><a href="#introduction">Introduction to MCP Security</a></li>
+                    <li><a href="#common-vulnerabilities">Common MCP Vulnerabilities</a></li>
+                    <li><a href="#best-practices">Security Best Practices</a></li>
+                    <li><a href="#input-validation">Input Validation Techniques</a></li>
+                    <li><a href="#output-filtering">Output Filtering & Sanitization</a></li>
+                    <li><a href="#context-boundaries">Enforcing Context Boundaries</a></li>
+                    <li><a href="#monitoring">Security Monitoring & Auditing</a></li>
+                    <li><a href="#sandbox">Sandbox and Runtime Protection</a></li>
+                    <li><a href="#tool-verification">Advanced Tool Verification</a></li>
+                    <li><a href="#checklist">Security Implementation Checklist</a></li>
+                    <li><a href="#resources">Additional Resources</a></li>
+                </ul>
+            </div>
+            
+            <div class="security-main">
+                <%- securityContent %>
+            </div>
+        </div>
+    </div>
+    
+    <%- include('../partials/footer') %>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('.security-section');
+            const navLinks = document.querySelectorAll('.security-nav a');
+            let currentSection = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                const sectionHeight = section.offsetHeight;
+                if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
+                    currentSection = '#' + section.getAttribute('id');
+                }
+            });
+            navLinks.forEach(link => {
+                link.style.fontWeight = link.getAttribute('href') === currentSection ? 'bold' : 'normal';
+                link.style.color = link.getAttribute('href') === currentSection ? 'var(--primary-color)' : '';
+            });
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            convertCodeBlocksToCollapsible();
+            initializeCodeBlocks();
+        });
+        
+        function convertCodeBlocksToCollapsible() {
+            const codeBlocks = document.querySelectorAll('.security-section pre');
+            codeBlocks.forEach((pre, index) => {
+                if (pre.closest('.code-content')) return;
+                const parent = pre.parentNode;
+                const container = document.createElement('div');
+                container.className = 'code-container';
+                const header = document.createElement('div');
+                header.className = 'code-header';
+                const title = document.createElement('div');
+                title.className = 'code-title';
+                let codeContent = pre.textContent.trim();
+                let firstLine = codeContent.split('\n')[0].trim();
+                let titleText = firstLine.replace('//', '').trim();
+                if (titleText.length > 50) titleText = titleText.substring(0, 47) + '...';
+                title.innerHTML = `<i class="fas fa-code"></i>${titleText || 'Code Example ' + (index + 1)}`;
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = 'code-toggle';
+                toggleBtn.innerHTML = `<span class="toggle-text">Hide code</span><i class="fas fa-chevron-down"></i>`;
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'code-content';
+                parent.removeChild(pre);
+                contentDiv.appendChild(pre);
+                header.appendChild(title);
+                header.appendChild(toggleBtn);
+                container.appendChild(header);
+                container.appendChild(contentDiv);
+                parent.appendChild(container);
+            });
+        }
+        
+        function initializeCodeBlocks() {
+            const codeContainers = document.querySelectorAll('.code-container');
+            codeContainers.forEach(container => {
+                const toggleBtn = container.querySelector('.code-toggle');
+                const codeContent = container.querySelector('.code-content');
+                if (toggleBtn && codeContent) {
+                    toggleBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        toggleCodeBlock(toggleBtn, codeContent);
+                    });
+                    const codeHeader = container.querySelector('.code-header');
+                    if (codeHeader) {
+                        codeHeader.addEventListener('click', function() {
+                            toggleCodeBlock(toggleBtn, codeContent);
+                        });
+                    }
+                }
+            });
+        }
+        
+        function toggleCodeBlock(toggleBtn, codeContent) {
+            codeContent.classList.toggle('collapsed');
+            toggleBtn.classList.toggle('collapsed');
+            if (toggleBtn.classList.contains('collapsed')) {
+                toggleBtn.querySelector('.toggle-text').textContent = 'Show code';
+            } else {
+                toggleBtn.querySelector('.toggle-text').textContent = 'Hide code';
+                const pre = codeContent.querySelector('pre');
+                if (pre) {
+                    pre.style.maxHeight = 'none';
+                    pre.style.height = 'auto';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

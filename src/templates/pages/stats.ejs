@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', { meta: meta, currentPage: 'stats' }) %>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <%- include('../partials/header', { currentPage: 'stats' }) %>
+
+    <section class="stats-hero">
+        <div class="container">
+            <h1>Vulnerability Statistics</h1>
+            <p>Data-driven overview of the MCP security landscape</p>
+        </div>
+    </section>
+
+    <main class="container" id="main-content" style="padding-top: var(--space-8); padding-bottom: var(--space-8);">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-value"><%= stats.total %></span>
+                <span class="stat-label">Total Vulnerabilities</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value"><%= stats.cveCount %></span>
+                <span class="stat-label">CVEs Tracked</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value"><%= stats.criticalCount %></span>
+                <span class="stat-label">Critical Severity</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value"><%= stats.researchers %></span>
+                <span class="stat-label">Unique Researchers</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value"><%= stats.dateRange %></span>
+                <span class="stat-label">Date Range</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value"><%= stats.categories %></span>
+                <span class="stat-label">Categories</span>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h2>Breakdown Analysis</h2>
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <h3>Severity Distribution</h3>
+                    <canvas id="severityChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Category Distribution</h3>
+                    <canvas id="categoryChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Vulnerabilities by Month</h3>
+                    <canvas id="timelineChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Exploitability Levels</h3>
+                    <canvas id="exploitChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Affected Components</h3>
+                    <canvas id="componentChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Cisco AI Security Framework Mapping</h3>
+                    <div class="cisco-heatmap">
+                        <% stats.ciscoData.forEach(function(c) { %>
+                        <div class="cisco-cell" style="background: rgba(<%= c.count > 10 ? '218,54,51' : c.count > 5 ? '245,109,21' : '62,99,221' %>, <%= Math.min(0.15 + c.count * 0.04, 0.5) %>);">
+                            <span class="cisco-count"><%= c.count %></span>
+                            <span class="cisco-label"><%= c.label %></span>
+                        </div>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+    (function() {
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        var textColor = isDark ? '#C9D1D9' : '#11181C';
+        var gridColor = isDark ? 'rgba(201,209,217,0.1)' : 'rgba(0,0,0,0.06)';
+
+        Chart.defaults.color = textColor;
+        Chart.defaults.borderColor = gridColor;
+
+        var severityData = <%- JSON.stringify(stats.severityData) %>;
+        new Chart(document.getElementById('severityChart'), {
+            type: 'doughnut',
+            data: {
+                labels: severityData.map(function(d) { return d.label; }),
+                datasets: [{
+                    data: severityData.map(function(d) { return d.count; }),
+                    backgroundColor: severityData.map(function(d) { return d.color; }),
+                    borderWidth: 0
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+
+        var catData = <%- JSON.stringify(stats.categoryData) %>;
+        new Chart(document.getElementById('categoryChart'), {
+            type: 'bar',
+            data: {
+                labels: catData.map(function(d) { return d.label; }),
+                datasets: [{
+                    label: 'Vulnerabilities',
+                    data: catData.map(function(d) { return d.count; }),
+                    backgroundColor: 'rgba(62, 99, 221, 0.7)',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+            }
+        });
+
+        var tlData = <%- JSON.stringify(stats.timelineData) %>;
+        new Chart(document.getElementById('timelineChart'), {
+            type: 'bar',
+            data: {
+                labels: tlData.map(function(d) { return d.label; }),
+                datasets: [{
+                    label: 'Disclosures',
+                    data: tlData.map(function(d) { return d.count; }),
+                    backgroundColor: 'rgba(62, 99, 221, 0.7)',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+            }
+        });
+
+        var exploitData = <%- JSON.stringify(stats.exploitData) %>;
+        new Chart(document.getElementById('exploitChart'), {
+            type: 'doughnut',
+            data: {
+                labels: exploitData.map(function(d) { return d.label; }),
+                datasets: [{
+                    data: exploitData.map(function(d) { return d.count; }),
+                    backgroundColor: ['#DA3633', '#FF6E4A', '#F0883E', '#58A6FF', '#8B949E'],
+                    borderWidth: 0
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+
+        var compData = <%- JSON.stringify(stats.componentData) %>;
+        new Chart(document.getElementById('componentChart'), {
+            type: 'bar',
+            data: {
+                labels: compData.map(function(d) { return d.label; }),
+                datasets: [{
+                    label: 'Affected',
+                    data: compData.map(function(d) { return d.count; }),
+                    backgroundColor: ['#5B7FFF', '#3FB950', '#F0883E', '#DA3633'],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+            }
+        });
+    })();
+    </script>
+</body>
+</html>

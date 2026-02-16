@@ -1,0 +1,44 @@
+<% var base = (typeof basePath !== 'undefined') ? basePath : ''; %>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="<%= meta.description %>">
+<meta name="keywords" content="<%= meta.keywords %>">
+<meta name="author" content="<%= meta.author || 'Vineeth Sai' %>">
+<meta property="og:title" content="<%= meta.ogTitle || meta.title %>">
+<meta property="og:description" content="<%= meta.ogDescription || meta.description %>">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://vulnerablemcp.info/<%= meta.canonical || '' %>">
+<meta property="og:site_name" content="The Vulnerable MCP Project">
+<meta property="og:image" content="https://vulnerablemcp.info/assets/images/og-image.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<%= meta.twitterTitle || meta.ogTitle || meta.title %>">
+<meta name="twitter:description" content="<%= meta.twitterDescription || meta.ogDescription || meta.description %>">
+<meta name="twitter:image" content="https://vulnerablemcp.info/assets/images/og-image.svg">
+<% if (meta.robots) { %><meta name="robots" content="<%= meta.robots %>">
+<% } %>
+<link rel="icon" href="<%= base %>favicon.ico" type="image/x-icon">
+<link rel="icon" href="<%= base %>favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="<%= base %>favicon.svg">
+<link rel="canonical" href="https://vulnerablemcp.info/<%= meta.canonical || '' %>">
+<title><%= meta.title %></title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WQZ3K6M59C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-WQZ3K6M59C');
+</script>
+
+<% if (meta.structuredData) { %>
+<% var sdItems = Array.isArray(meta.structuredData) ? meta.structuredData : [meta.structuredData]; %>
+<% sdItems.forEach(function(sd) { %>
+<script type="application/ld+json">
+<%- JSON.stringify(sd, null, 2) %>
+</script>
+<% }); %>
+<% } %>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="<%= base %>assets/css/style.css">

@@ -1,0 +1,25 @@
+<% var base = (typeof basePath !== 'undefined') ? basePath : ''; %>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<header>
+    <div class="header-container">
+        <div class="logo">
+            <h1><a href="<%= base %>index.html">The Vulnerable MCP Project</a></h1>
+        </div>
+        <nav>
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span class="hamburger">&#9776;</span>
+            </button>
+            <ul class="nav-links">
+                <li><a href="<%= base %>index.html"<%- currentPage === 'index' ? ' class="active"' : '' %>>Home</a></li>
+                <li><a href="<%= base %>stats.html"<%- currentPage === 'stats' ? ' class="active"' : '' %>>Stats</a></li>
+                <li><a href="<%= base %>taxonomy.html"<%- currentPage === 'taxonomy' ? ' class="active"' : '' %>>Taxonomy</a></li>
+                <li><a href="<%= base %>about.html"<%- currentPage === 'about' ? ' class="active"' : '' %>>About</a></li>
+                <li><a href="<%= base %>security.html"<%- currentPage === 'security' ? ' class="active"' : '' %>>MCP Security</a></li>
+                <li><a href="<%= base %>etdi-security.html"<%- currentPage === 'etdi-security' ? ' class="active"' : '' %>>ETDI</a></li>
+                <li><a href="<%= base %>report.html"<%- currentPage === 'report' ? ' class="active"' : '' %>>Report</a></li>
+                <li><a href="https://vineethsai.com" target="_blank" rel="noopener">Author</a></li>
+            </ul>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode"><i class="fas fa-moon"></i></button>
+        </nav>
+    </div>
+</header>

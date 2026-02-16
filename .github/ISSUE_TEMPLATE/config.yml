@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Contribution Guide
+    url: https://github.com/vineethsai/vulnerablemcp/blob/main/CONTRIBUTING.md
+    about: Read our contribution guide before submitting
+  - name: Report via Web Form
+    url: https://vulnerablemcp.info/report.html
+    about: Use the web form on our site for a guided reporting experience

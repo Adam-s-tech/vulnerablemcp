@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', { meta: meta, currentPage: '' }) %>
+</head>
+<body>
+    <%- include('../partials/header', { currentPage: '' }) %>
+    
+    <div class="hero">
+        <div class="container">
+            <h1>Page Not Found</h1>
+            <p>The page you're looking for doesn't exist or has been moved.</p>
+        </div>
+    </div>
+    
+    <main class="container" id="main-content" style="text-align: center; padding: 4rem 1rem;">
+        <h2 style="margin-bottom: 1rem;">404</h2>
+        <p style="margin-bottom: 2rem;">Sorry, we couldn't find that page. Try returning to the homepage to browse our vulnerability database.</p>
+        <a href="index.html" class="btn" style="display: inline-block;">Return to Homepage</a>
+    </main>
+    
+    <%- include('../partials/footer') %>
+</body>
+</html>

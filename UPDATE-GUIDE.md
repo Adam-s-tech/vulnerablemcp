@@ -1,73 +1,79 @@
 # Vulnerability Update Guide
 
-## Quick Update Process
+## Adding a New Vulnerability
 
-To add new vulnerabilities to the website:
+### 1. Edit the JSON data file
 
-1. **Edit the markdown file**: Update `vulnerabilities.md` with new vulnerability entries
-2. **Run the update script**: `npm run update`
-3. **Done!** The HTML will be automatically updated while preserving the stable UI
+Open `data/vulnerabilities.json` and add a new entry to the array:
 
-## Adding Vulnerabilities to vulnerabilities.md
-
-Follow this format for each vulnerability:
-
-```markdown
-## Vulnerability Title
-
-**Severity:** High/Medium/Low  
-**Category:** Security/Implementation  
-**Reported By:** Organization or Person Name  
-**Date:** Month Day, Year  
-**Tags:** Tag1, Tag2, Tag3  
-**URL:** https://example.com/vulnerability-details
-
-Description of the vulnerability goes here. This can be multiple paragraphs explaining the vulnerability, its impact, and any relevant technical details.
-
----
+```json
+{
+  "id": "unique-slug-for-the-vulnerability",
+  "title": "Vulnerability Title",
+  "severity": "high",
+  "category": "security",
+  "reportedBy": "Researcher or Organization Name",
+  "date": "2025-07-01",
+  "tags": ["Tag1", "Tag2", "Tag3"],
+  "url": "https://example.com/vulnerability-details",
+  "description": "Description of the vulnerability. Use \\n for paragraph breaks."
+}
 ```
 
-**Important Notes:**
-- Each vulnerability MUST end with `---` separator
-- Keep vulnerabilities in chronological order (newest at the bottom)
-- The script will automatically generate proper HTML with the correct structure
+### 2. Validate your entry
 
-## Scripts Available
+```bash
+npm run validate
+```
 
-- `npm run update` - Uses the new stable script (recommended)
-- `npm run update-old` - Uses the old script (may break UI - not recommended)
+This checks:
+- All required fields are present
+- Date format is `YYYY-MM-DD`
+- Severity is one of: `high`, `medium`, `low`, `info`
+- Category is one of: `security`, `implementation`
+- IDs are unique
+- URLs start with `http`
 
-## What the Script Does
+### 3. Build and preview
 
-The `update-stable.js` script:
-- ✅ Parses `vulnerabilities.md` 
-- ✅ Generates proper HTML with `vulnerability-card` class structure
-- ✅ Preserves the stable UI design and JavaScript functionality
-- ✅ Updates only the vulnerability cards section
-- ✅ Maintains chronological order
-- ✅ Keeps all existing styling and interactive features
+```bash
+npm run build    # Generate site in dist/
+npm run dev      # Build + start local server at http://localhost:3000
+```
 
-## Deployment
+### 4. Submit
 
-### For simple updates (adding vulnerabilities):
-1. Edit `vulnerabilities.md`
-2. `npm run update` (builds HTML)
-3. `git add . && git commit -m "Add new vulnerability"`
-4. `git push origin main`
-5. `./rebuild_and_deploy.sh` (deploys website files to GitHub Pages)
+```bash
+git add data/vulnerabilities.json
+git commit -m "Add vulnerability: Your Vulnerability Title"
+git push origin main
+```
 
-### Repository Structure:
-- **main branch**: Source files (vulnerabilities.md, scripts, documentation)
-- **gh-pages branch**: Built website files only (HTML, CSS, JS, assets)
+The site will auto-deploy via GitHub Actions within a few minutes.
 
-The deployment script automatically copies only the necessary website files to gh-pages, keeping the repository clean and avoiding confusion about which files to update.
+## Field Reference
+
+| Field | Format | Example |
+|-------|--------|---------|
+| `id` | kebab-case slug | `tool-poisoning-attacks` |
+| `title` | Free text | `Tool Poisoning Attacks` |
+| `severity` | `high` / `medium` / `low` / `info` | `high` |
+| `category` | `security` / `implementation` | `security` |
+| `reportedBy` | Free text | `Invariant Labs` |
+| `date` | `YYYY-MM-DD` | `2025-04-01` |
+| `tags` | Array of strings | `["Data Exfiltration", "Prompt Injection"]` |
+| `url` | URL to writeup | `https://example.com/blog/post` |
+| `description` | Free text, `\n` for paragraphs | `Description here...` |
 
 ## Troubleshooting
 
-If the script fails:
-- Check that `vulnerabilities.md` format is correct
-- Ensure each vulnerability has all required fields
-- Verify the `---` separators are present
-- Make sure there are no syntax errors in the markdown
+- **Validation fails**: Check the error message -- it tells you exactly which field and entry has the issue
+- **Build fails**: Make sure `npm install` has been run and `data/vulnerabilities.json` is valid JSON
+- **Missing images on ETDI page**: Ensure PNG files are in the root directory (they get copied to `dist/` during build)
 
-The script will show clear error messages if something goes wrong. 
+## Architecture
+
+- `data/vulnerabilities.json` is the single source of truth
+- `build.js` reads the JSON and renders EJS templates into `dist/`
+- Templates in `src/templates/partials/` are shared across all pages (header, footer, head)
+- GitHub Actions automatically builds and deploys on push to `main`

@@ -1,0 +1,90 @@
+{
+  "version": "1.0.0",
+  "severities": [
+    { "id": "critical", "label": "Critical", "description": "Actively exploited or trivially exploitable with severe impact", "color": "#991B1B" },
+    { "id": "high", "label": "High", "description": "Significant risk requiring prompt attention", "color": "#E54D2E" },
+    { "id": "medium", "label": "Medium", "description": "Moderate risk with limited scope or requiring specific conditions", "color": "#F76B15" },
+    { "id": "low", "label": "Low", "description": "Minor risk with minimal impact", "color": "#0090FF" },
+    { "id": "info", "label": "Info", "description": "Informational finding with no direct risk", "color": "#687076" }
+  ],
+  "categories": [
+    { "id": "prompt-injection", "label": "Prompt Injection / Instruction Boundary Failures", "shortLabel": "Prompt Injection", "description": "Attacks that exploit the inability to distinguish between instructions and data, allowing malicious input to manipulate LLM behavior." },
+    { "id": "input-validation", "label": "Input Validation / Sanitization Failures", "shortLabel": "Input Validation", "description": "Failures to properly validate, sanitize, or filter inputs that flow through MCP tool interfaces." },
+    { "id": "authentication", "label": "Authentication / Authorization Failures", "shortLabel": "Auth Failures", "description": "Weaknesses in authenticating MCP servers, authorizing tool access, or managing user consent." },
+    { "id": "session-management", "label": "Session Management Design Flaws", "shortLabel": "Session Mgmt", "description": "Protocol-level and implementation weaknesses in how MCP sessions are created, maintained, and terminated." },
+    { "id": "integrity", "label": "Integrity / Verification Control Failures", "shortLabel": "Integrity", "description": "Absence of mechanisms to detect or prevent unauthorized modification of tool definitions, descriptions, or behavior." },
+    { "id": "trust-model", "label": "Trust Model Design Flaws", "shortLabel": "Trust Model", "description": "Fundamental architectural assumptions about trust that create systemic vulnerabilities in the MCP ecosystem." },
+    { "id": "credential-management", "label": "Credential Management Failures", "shortLabel": "Credentials", "description": "Insecure handling, storage, or transmission of API keys, tokens, and other credentials used by MCP servers." },
+    { "id": "network-security", "label": "Network Security / Transport Failures", "shortLabel": "Network Security", "description": "Vulnerabilities in network-level protections including DNS rebinding, SSRF, default binding to all interfaces, and transport-layer security failures in MCP deployments." }
+  ],
+  "tags": [
+    { "id": "prompt-injection", "label": "Prompt Injection" },
+    { "id": "data-exfiltration", "label": "Data Exfiltration" },
+    { "id": "tool-manipulation", "label": "Tool Manipulation" },
+    { "id": "hidden-instructions", "label": "Hidden Instructions" },
+    { "id": "tool-hijacking", "label": "Tool Hijacking" },
+    { "id": "confused-deputy", "label": "Confused Deputy" },
+    { "id": "message-hijacking", "label": "Message Hijacking" },
+    { "id": "deceptive-ui", "label": "Deceptive UI" },
+    { "id": "session-hijacking", "label": "Session Hijacking" },
+    { "id": "protocol-design", "label": "Protocol Design" },
+    { "id": "security-bypass", "label": "Security Bypass" },
+    { "id": "code-execution", "label": "Code Execution" },
+    { "id": "remote-code-execution", "label": "Remote Code Execution" },
+    { "id": "social-engineering", "label": "Social Engineering" },
+    { "id": "tool-overriding", "label": "Tool Overriding" },
+    { "id": "credential-theft", "label": "Credential Theft" },
+    { "id": "plaintext-storage", "label": "Plaintext Storage" },
+    { "id": "terminal-injection", "label": "Terminal Injection" },
+    { "id": "supply-chain", "label": "Supply Chain" },
+    { "id": "bait-and-switch", "label": "Bait and Switch" },
+    { "id": "toxic-agent-flow", "label": "Toxic Agent Flow" },
+    { "id": "consent-bypass", "label": "Consent Bypass" },
+    { "id": "naming-collision", "label": "Naming Collision" },
+    { "id": "dns-rebinding", "label": "DNS Rebinding" },
+    { "id": "ownership-transfer", "label": "Ownership Transfer" },
+    { "id": "base64-obfuscation", "label": "Base64 Obfuscation" },
+    { "id": "ssh-key-theft", "label": "SSH Key Theft" },
+    { "id": "trigger-phrase", "label": "Trigger Phrase" },
+    { "id": "conversation-history", "label": "Conversation History" },
+    { "id": "parameter-abuse", "label": "Parameter Abuse" },
+    { "id": "ssrf", "label": "Server-Side Request Forgery" },
+    { "id": "resource-theft", "label": "Resource Theft / Compute Abuse" },
+    { "id": "zero-click", "label": "Zero-Click Exploitation" },
+    { "id": "browser-injection", "label": "Browser Injection" },
+    { "id": "registry-hijacking", "label": "Registry Hijacking" },
+    { "id": "command-injection", "label": "Command Injection" },
+    { "id": "path-traversal", "label": "Path Traversal" },
+    { "id": "sandbox-escape", "label": "Sandbox Escape" },
+    { "id": "cross-client-leak", "label": "Cross-Client Data Leak" },
+    { "id": "configuration-bypass", "label": "Configuration Bypass" }
+  ],
+  "exploitability": [
+    { "id": "trivial", "label": "Trivial", "description": "No special skills or tools needed; publicly documented steps" },
+    { "id": "easy", "label": "Easy", "description": "Basic technical knowledge required; proof-of-concept exists" },
+    { "id": "moderate", "label": "Moderate", "description": "Requires understanding of MCP internals or specific conditions" },
+    { "id": "difficult", "label": "Difficult", "description": "Requires advanced skills, chaining multiple vulnerabilities, or rare conditions" },
+    { "id": "theoretical", "label": "Theoretical", "description": "No known public exploit; risk is based on design analysis" }
+  ],
+  "affectedComponents": [
+    { "id": "client", "label": "MCP Client", "description": "Vulnerabilities in MCP client implementations (e.g., Claude Desktop, Cursor)" },
+    { "id": "server", "label": "MCP Server", "description": "Vulnerabilities in MCP server implementations" },
+    { "id": "protocol", "label": "MCP Protocol", "description": "Vulnerabilities in the MCP protocol specification itself" },
+    { "id": "ecosystem", "label": "MCP Ecosystem", "description": "Vulnerabilities in the broader MCP tooling ecosystem (inspectors, registries)" }
+  ],
+  "prevalence": [
+    { "id": "widespread", "label": "Widespread", "description": "Affects most MCP implementations" },
+    { "id": "common", "label": "Common", "description": "Affects many implementations or popular tools" },
+    { "id": "emerging", "label": "Emerging", "description": "Recently discovered, scope still being assessed" },
+    { "id": "rare", "label": "Rare", "description": "Affects specific tools or unusual configurations" }
+  ],
+  "ciscoObjectives": [
+    { "id": "goal-hijacking", "label": "Goal Hijacking", "description": "Manipulating AI agent goals to serve attacker objectives instead of user intent" },
+    { "id": "data-privacy-violation", "label": "Data Privacy Violation", "description": "Unauthorized access, collection, or exfiltration of sensitive user data" },
+    { "id": "privilege-escalation", "label": "Privilege Escalation", "description": "Gaining unauthorized elevated access to systems, resources, or capabilities" },
+    { "id": "integrity-compromise", "label": "Integrity Compromise", "description": "Unauthorized modification of tool definitions, data, or system behavior" },
+    { "id": "unauthorized-access", "label": "Unauthorized Access", "description": "Accessing resources, systems, or data without proper authorization" },
+    { "id": "supply-chain-compromise", "label": "Supply Chain Compromise", "description": "Introducing vulnerabilities through compromised tools, packages, or dependencies" },
+    { "id": "communication-compromise", "label": "Communication Compromise", "description": "Intercepting or manipulating communications between MCP components" }
+  ]
+}

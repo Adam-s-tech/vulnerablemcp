@@ -3,8 +3,8 @@ const fs = require('fs');
 const path = require('path');
 
 const PORT = 3000;
+const DIST = path.join(__dirname, 'dist');
 
-// MIME types for different file extensions
 const MIME_TYPES = {
   '.html': 'text/html',
   '.css': 'text/css',
@@ -17,51 +17,41 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon',
 };
 
-// Create the server
 const server = http.createServer((req, res) => {
   console.log(`${req.method} ${req.url}`);
-  
-  // Handle the root path
-  let filePath = req.url === '/' 
-    ? path.join(__dirname, 'index.html')
-    : path.join(__dirname, req.url);
-  
-  // Get the file extension
+
+  let filePath = req.url === '/'
+    ? path.join(DIST, 'index.html')
+    : path.join(DIST, req.url);
+
   const extname = path.extname(filePath);
-  
-  // Default content type
-  let contentType = MIME_TYPES[extname] || 'text/plain';
-  
-  // Read the file
+  const contentType = MIME_TYPES[extname] || 'text/plain';
+
   fs.readFile(filePath, (err, content) => {
     if (err) {
       if (err.code === 'ENOENT') {
-        // Page not found
-        fs.readFile(path.join(__dirname, '404.html'), (err, content) => {
-          if (err) {
-            // No 404 page found, send a simple message
+        fs.readFile(path.join(DIST, '404.html'), (err404, content404) => {
+          if (err404) {
             res.writeHead(404, { 'Content-Type': 'text/html' });
             res.end('<h1>404 Not Found</h1>');
           } else {
             res.writeHead(404, { 'Content-Type': 'text/html' });
-            res.end(content, 'utf-8');
+            res.end(content404, 'utf-8');
           }
         });
       } else {
-        // Server error
         res.writeHead(500);
         res.end(`Server Error: ${err.code}`);
       }
     } else {
-      // Success
       res.writeHead(200, { 'Content-Type': contentType });
       res.end(content, 'utf-8');
     }
   });
 });
 
-// Start the server
 server.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}/`);
-  console.log(`Press Ctrl+C to stop the server`);
+  console.log(`Serving from: ${DIST}`);
+  console.log('Press Ctrl+C to stop the server');
 });

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', { meta: meta, currentPage: 'index' }) %>
+</head>
+<body>
+    <%- include('../partials/header', { currentPage: 'index' }) %>
+    
+    <section class="hero">
+        <div class="container">
+            <h1>The Vulnerable MCP Project</h1>
+            <p>A comprehensive database of Model Context Protocol vulnerabilities, security research, and exploits</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-value"><%= vulnerabilities.length %></span>
+                    <span class="hero-stat-label">Vulnerabilities</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value"><%= vulnerabilities.filter(v => v.severity === 'critical').length %></span>
+                    <span class="hero-stat-label">Critical</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value"><%= new Set(vulnerabilities.map(v => v.reportedBy)).size %></span>
+                    <span class="hero-stat-label">Researchers</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="timeline-section">
+        <div class="container">
+            <div class="timeline-header">
+                <h2 class="section-title">Vulnerability Timeline</h2>
+                <button id="toggle-timeline-btn">Show Timeline</button>
+            </div>
+            <ul class="timeline" style="display: none;">
+            </ul>
+        </div>
+    </section>
+    
+    <main class="container" id="main-content">
+        <div class="search-bar" role="search">
+            <input type="text" placeholder="Search by title, description, tags, or CVE ID..." id="searchInput" aria-label="Search vulnerabilities">
+            <span class="search-hint">Ctrl+K</span>
+            <button type="button" id="searchButton"><i class="fas fa-search"></i> Search</button>
+        </div>
+        
+        <!-- Severity Filters -->
+        <div class="filter-row">
+            <label class="filter-label">Severity</label>
+            <div class="filters" id="severityFilters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn filter-critical" data-filter="critical">Critical</button>
+                <button class="filter-btn filter-high" data-filter="high">High</button>
+                <button class="filter-btn filter-medium" data-filter="medium">Medium</button>
+                <button class="filter-btn filter-low" data-filter="low">Low</button>
+            </div>
+        </div>
+
+        <!-- Category Filters -->
+        <div class="filter-row">
+            <label class="filter-label">Category</label>
+            <div class="filters" id="categoryFilters">
+                <button class="filter-btn active" data-cat="all">All</button>
+                <% taxonomy.categories.forEach(function(cat) { %>
+                <% var count = vulnerabilities.filter(v => v.category === cat.id).length; %>
+                <% if (count > 0) { %>
+                <button class="filter-btn" data-cat="<%= cat.id %>"><%= cat.shortLabel %> (<%= count %>)</button>
+                <% } %>
+                <% }); %>
+            </div>
+        </div>
+
+        <!-- Sort and Results -->
+        <div class="results-bar">
+            <p id="resultsCount">Loading vulnerabilities...</p>
+            <div class="results-bar-right">
+                <select id="sortSelect" class="sort-select">
+                    <option value="date-desc">Newest First</option>
+                    <option value="date-asc">Oldest First</option>
+                    <option value="impact-desc">Highest Impact</option>
+                    <option value="severity-desc">Severity</option>
+                    <option value="alpha-asc">A-Z</option>
+                </select>
+                <div class="view-toggle">
+                    <button id="grid-view-btn" class="active" aria-label="Grid view"><i class="fas fa-th"></i></button>
+                    <button id="list-view-btn" aria-label="List view"><i class="fas fa-list"></i></button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="issues-grid">
+<% vulnerabilities.forEach(function(vuln) { %>
+            <div class="vulnerability-card" 
+                 data-category="<%= vuln.category %>" 
+                 data-severity="<%= vuln.severity %>"
+                 data-impact="<%= vuln.impactScore %>"
+                 data-date="<%= vuln.date %>"
+                 data-title="<%= vuln.title %>"
+                 data-cveids="<%= (vuln.cveIds || []).join(',').toLowerCase() %>">
+                <div class="card-header">
+                    <a href="vuln/<%= vuln.id %>.html" class="issue-title-link">
+                        <div class="issue-title"><%= vuln.title %></div>
+                    </a>
+                    <span class="severity-badge severity-<%= vuln.severity %>"><%= vuln.severity.charAt(0).toUpperCase() + vuln.severity.slice(1) %></span>
+                </div>
+                <div class="card-body">
+                    <p class="issue-description"><%= vuln.description %></p>
+                    <div class="card-scores">
+                        <div class="card-score">
+                            <span class="card-score-label">Impact</span>
+                            <span class="card-score-value score-color-<%= vuln.impactScore >= 9 ? 'critical' : vuln.impactScore >= 7 ? 'high' : vuln.impactScore >= 4 ? 'medium' : 'low' %>"><%= vuln.impactScore %>/10</span>
+                        </div>
+                        <div class="card-score">
+                            <span class="card-score-label">Exploitability</span>
+                            <span class="exploitability-badge exploitability-<%= vuln.exploitability %> small"><%= vuln.exploitability.charAt(0).toUpperCase() + vuln.exploitability.slice(1) %></span>
+                        </div>
+                        <div class="card-score">
+                            <span class="card-score-label">Prevalence</span>
+                            <span class="card-score-text"><%= vuln.prevalence.charAt(0).toUpperCase() + vuln.prevalence.slice(1) %></span>
+                        </div>
+                    </div>
+                    <div class="tags">
+<% vuln.tags.slice(0, 4).forEach(function(tagId) { %>
+<% var tagObj = taxonomy.tags.find(function(t) { return t.id === tagId; }); %>
+                        <span class="tag"><%= tagObj ? tagObj.label : tagId %></span>
+<% }); %>
+<% if (vuln.tags.length > 4) { %>
+                        <span class="tag tag-more">+<%= vuln.tags.length - 4 %></span>
+<% } %>
+                    </div>
+                    <div class="meta-info">
+                        <span><i class="far fa-calendar"></i> <%= vuln.displayDate %></span>
+                        <span><i class="fas fa-user"></i> <%= vuln.reportedBy %></span>
+                    </div>
+                    <div class="card-actions">
+                        <a href="vuln/<%= vuln.id %>.html" class="btn">View Details</a>
+                        <a href="<%= vuln.url %>" class="btn btn-outline" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> Source</a>
+                    </div>
+                </div>
+            </div>
+<% }); %>
+        </div>
+
+        <div class="issues-list" style="display: none;">
+        </div>
+
+        <div class="no-results" id="noResults" style="display: none;">
+            <i class="fas fa-search"></i>
+            <h3>No vulnerabilities found</h3>
+            <p>Try adjusting your search terms or clearing the filters. You can search by title, description, tags, or CVE ID.</p>
+        </div>
+    </main>
+    
+    <%- include('../partials/footer') %>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var searchInput = document.getElementById('searchInput');
+            var severityBtns = document.querySelectorAll('#severityFilters .filter-btn');
+            var categoryBtns = document.querySelectorAll('#categoryFilters .filter-btn');
+            var sortSelect = document.getElementById('sortSelect');
+            var gridViewBtn = document.getElementById('grid-view-btn');
+            var listViewBtn = document.getElementById('list-view-btn');
+            var issuesGrid = document.querySelector('.issues-grid');
+            var issuesList = document.querySelector('.issues-list');
+            var timelineContainer = document.querySelector('.timeline');
+            var toggleTimelineBtn = document.getElementById('toggle-timeline-btn');
+            var resultsCount = document.getElementById('resultsCount');
+            var noResults = document.getElementById('noResults');
+
+            var activeSeverity = 'all';
+            var activeCategory = 'all';
+
+            var vulnerabilityCards = Array.from(issuesGrid.querySelectorAll('.vulnerability-card'));
+
+            // Store original HTML for highlight restoration
+            vulnerabilityCards.forEach(function(card) {
+                card._origTitle = card.querySelector('.issue-title').innerHTML;
+                card._origDesc = card.querySelector('.issue-description').innerHTML;
+            });
+
+            function generateListItems() {
+                issuesList.innerHTML = '';
+                vulnerabilityCards.forEach(function(card) {
+                    var title = card.querySelector('.issue-title').textContent;
+                    var severity = card.getAttribute('data-severity');
+                    var category = card.getAttribute('data-category');
+                    var impact = card.getAttribute('data-impact');
+                    var date = card.getAttribute('data-date');
+                    var detailLink = card.querySelector('.issue-title-link') ? card.querySelector('.issue-title-link').href : '#';
+
+                    var listItem = document.createElement('div');
+                    listItem.className = 'list-item';
+                    listItem.setAttribute('data-category', category);
+                    listItem.setAttribute('data-severity', severity);
+                    listItem.setAttribute('data-impact', impact);
+                    listItem.setAttribute('data-date', date);
+                    listItem.setAttribute('data-title', title);
+
+                    listItem.innerHTML =
+                        '<div class="list-item-left">' +
+                            '<div class="list-severity ' + severity + '"></div>' +
+                            '<a href="' + detailLink + '" class="list-title">' + title + '</a>' +
+                        '</div>' +
+                        '<div class="list-meta">' +
+                            '<span class="list-impact">' + impact + '/10</span>' +
+                            '<span class="list-date">' + new Date(date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + '</span>' +
+                        '</div>' +
+                        '<div class="list-actions">' +
+                            '<a href="' + detailLink + '" class="btn">Details</a>' +
+                        '</div>';
+                    issuesList.appendChild(listItem);
+                });
+            }
+            generateListItems();
+
+            function getVisibleCount() {
+                var isGrid = gridViewBtn.classList.contains('active');
+                if (isGrid) {
+                    return vulnerabilityCards.filter(function(c) { return c.style.display !== 'none'; }).length;
+                }
+                return Array.from(issuesList.querySelectorAll('.list-item')).filter(function(i) { return i.style.display !== 'none'; }).length;
+            }
+
+            function updateResultsCount() {
+                var count = getVisibleCount();
+                resultsCount.textContent = count + ' vulnerabilit' + (count === 1 ? 'y' : 'ies') + ' found';
+                if (noResults) {
+                    noResults.style.display = count === 0 ? 'block' : 'none';
+                }
+            }
+
+            function highlightText(text, words) {
+                if (!words.length) return text;
+                var escaped = words.map(function(w) { return w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); });
+                var re = new RegExp('(' + escaped.join('|') + ')', 'gi');
+                return text.replace(re, '<mark>$1</mark>');
+            }
+
+            function matchesMultiWord(searchTerm, textParts) {
+                if (!searchTerm) return true;
+                var words = searchTerm.split(/\s+/).filter(function(w) { return w.length > 0; });
+                var combined = textParts.join(' ');
+                return words.every(function(word) { return combined.indexOf(word) !== -1; });
+            }
+
+            function filterAndSearch() {
+                var rawSearch = searchInput.value.trim();
+                var searchTerm = rawSearch.toLowerCase();
+                var searchWords = searchTerm.split(/\s+/).filter(function(w) { return w.length > 0; });
+
+                vulnerabilityCards.forEach(function(card) {
+                    var titleEl = card.querySelector('.issue-title');
+                    var descEl = card.querySelector('.issue-description');
+                    var titleText = titleEl.textContent.toLowerCase();
+                    var descText = descEl.textContent.toLowerCase();
+                    var tags = Array.from(card.querySelectorAll('.tag')).map(function(t) { return t.textContent.toLowerCase(); });
+                    var cveIds = (card.getAttribute('data-cveids') || '').toLowerCase();
+                    var severity = card.getAttribute('data-severity');
+                    var category = card.getAttribute('data-category');
+
+                    var matchesSeverity = activeSeverity === 'all' || severity === activeSeverity;
+                    var matchesCategory = activeCategory === 'all' || category === activeCategory;
+                    var allText = [titleText, descText, tags.join(' '), cveIds];
+                    var matchesSearch = matchesMultiWord(searchTerm, allText);
+
+                    var visible = matchesSeverity && matchesCategory && matchesSearch;
+                    card.style.display = visible ? 'block' : 'none';
+
+                    // Highlight matches
+                    if (visible && searchWords.length > 0) {
+                        titleEl.innerHTML = highlightText(card._origTitle, searchWords);
+                        descEl.innerHTML = highlightText(card._origDesc, searchWords);
+                    } else {
+                        titleEl.innerHTML = card._origTitle;
+                        descEl.innerHTML = card._origDesc;
+                    }
+                });
+
+                var listItems = Array.from(issuesList.querySelectorAll('.list-item'));
+                listItems.forEach(function(item) {
+                    var title = item.querySelector('.list-title').textContent.toLowerCase();
+                    var severity = item.getAttribute('data-severity');
+                    var category = item.getAttribute('data-category');
+
+                    var matchesSeverity = activeSeverity === 'all' || severity === activeSeverity;
+                    var matchesCategory = activeCategory === 'all' || category === activeCategory;
+                    var matchesSearch = matchesMultiWord(searchTerm, [title]);
+
+                    item.style.display = (matchesSeverity && matchesCategory && matchesSearch) ? 'flex' : 'none';
+                });
+
+                updateResultsCount();
+            }
+
+            function sortCards() {
+                var sortValue = sortSelect.value;
+                var sevOrder = { critical: 0, high: 1, medium: 2, low: 3, info: 4 };
+
+                var sorted = vulnerabilityCards.slice().sort(function(a, b) {
+                    switch (sortValue) {
+                        case 'date-desc': return b.getAttribute('data-date').localeCompare(a.getAttribute('data-date'));
+                        case 'date-asc': return a.getAttribute('data-date').localeCompare(b.getAttribute('data-date'));
+                        case 'impact-desc': return parseInt(b.getAttribute('data-impact')) - parseInt(a.getAttribute('data-impact'));
+                        case 'severity-desc': return (sevOrder[a.getAttribute('data-severity')] || 9) - (sevOrder[b.getAttribute('data-severity')] || 9);
+                        case 'alpha-asc': return a.getAttribute('data-title').localeCompare(b.getAttribute('data-title'));
+                        default: return 0;
+                    }
+                });
+
+                sorted.forEach(function(card) { issuesGrid.appendChild(card); });
+                generateListItems();
+                filterAndSearch();
+            }
+
+            searchInput.addEventListener('input', filterAndSearch);
+
+            severityBtns.forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    severityBtns.forEach(function(b) { b.classList.remove('active'); });
+                    this.classList.add('active');
+                    activeSeverity = this.getAttribute('data-filter');
+                    filterAndSearch();
+                });
+            });
+
+            categoryBtns.forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    categoryBtns.forEach(function(b) { b.classList.remove('active'); });
+                    this.classList.add('active');
+                    activeCategory = this.getAttribute('data-cat');
+                    filterAndSearch();
+                });
+            });
+
+            sortSelect.addEventListener('change', sortCards);
+
+            gridViewBtn.addEventListener('click', function() {
+                gridViewBtn.classList.add('active');
+                listViewBtn.classList.remove('active');
+                issuesGrid.style.display = 'grid';
+                issuesList.style.display = 'none';
+                updateResultsCount();
+            });
+
+            listViewBtn.addEventListener('click', function() {
+                listViewBtn.classList.add('active');
+                gridViewBtn.classList.remove('active');
+                issuesGrid.style.display = 'none';
+                issuesList.style.display = 'flex';
+                issuesList.style.flexDirection = 'column';
+                updateResultsCount();
+            });
+
+            // Timeline
+            function generateTimeline() {
+                if (!timelineContainer) return;
+                var vulns = vulnerabilityCards.map(function(card) {
+                    return {
+                        title: card.querySelector('.issue-title').textContent.trim(),
+                        date: new Date(card.getAttribute('data-date') + 'T00:00:00'),
+                        url: card.querySelector('.issue-title-link') ? card.querySelector('.issue-title-link').href : '#',
+                        severity: card.getAttribute('data-severity')
+                    };
+                });
+                vulns.sort(function(a, b) { return b.date - a.date; });
+                timelineContainer.innerHTML = '';
+                vulns.forEach(function(vuln) {
+                    var li = document.createElement('li');
+                    li.className = 'timeline-item';
+                    li.innerHTML =
+                        '<div class="timeline-dot timeline-dot-' + vuln.severity + '"></div>' +
+                        '<a href="' + vuln.url + '" class="timeline-content">' +
+                            '<span class="timeline-date">' + vuln.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) + '</span>' +
+                            '<h3 class="timeline-title">' + vuln.title + '</h3>' +
+                        '</a>';
+                    timelineContainer.appendChild(li);
+                });
+            }
+            generateTimeline();
+
+            if (toggleTimelineBtn && timelineContainer) {
+                toggleTimelineBtn.addEventListener('click', function() {
+                    var isHidden = timelineContainer.style.display === 'none';
+                    timelineContainer.style.display = isHidden ? 'block' : 'none';
+                    toggleTimelineBtn.textContent = isHidden ? 'Hide Timeline' : 'Show Timeline';
+                });
+            }
+
+            // URL query param deep-linking (?q=, ?severity=, ?category=)
+            var params = new URLSearchParams(window.location.search);
+            if (params.get('q')) {
+                searchInput.value = params.get('q');
+            }
+            if (params.get('severity')) {
+                activeSeverity = params.get('severity');
+                severityBtns.forEach(function(btn) {
+                    btn.classList.remove('active');
+                    if (btn.getAttribute('data-filter') === activeSeverity) btn.classList.add('active');
+                });
+            }
+            if (params.get('category')) {
+                activeCategory = params.get('category');
+                categoryBtns.forEach(function(btn) {
+                    btn.classList.remove('active');
+                    if (btn.getAttribute('data-cat') === activeCategory) btn.classList.add('active');
+                });
+            }
+
+            filterAndSearch();
+        });
+    </script>
+</body>
+</html>

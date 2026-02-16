@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', { meta: meta, currentPage: 'vuln-detail', basePath: '../' }) %>
+</head>
+<body>
+    <%- include('../partials/header', { currentPage: 'index', basePath: '../' }) %>
+
+    <div class="vuln-detail-hero severity-bg-<%= vuln.severity %>">
+        <div class="container">
+            <div class="vuln-detail-hero-inner">
+                <div class="vuln-breadcrumb">
+                    <a href="../index.html">Home</a> <span>/</span> <span><%= vuln.title %></span>
+                </div>
+                <h1><%= vuln.title %></h1>
+                <% if (vuln.alternativeNames && vuln.alternativeNames.length > 0) { %>
+                <p class="vuln-alt-names">Also known as: <%= vuln.alternativeNames.join(', ') %></p>
+                <% } %>
+                <div class="vuln-hero-meta">
+                    <span class="severity-badge severity-<%= vuln.severity %>"><%= vuln.severity.charAt(0).toUpperCase() + vuln.severity.slice(1) %></span>
+                    <span class="vuln-hero-meta-item"><i class="far fa-calendar"></i> <%= vuln.displayDate %></span>
+                    <span class="vuln-hero-meta-item"><i class="fas fa-user"></i> <%= vuln.reportedBy %></span>
+                    <% if (vuln.cveIds && vuln.cveIds.length > 0) { %>
+                    <% vuln.cveIds.forEach(function(cve) { %>
+                    <a href="https://nvd.nist.gov/vuln/detail/<%= cve %>" target="_blank" class="cve-badge"><%= cve %></a>
+                    <% }); %>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="container vuln-detail-main" id="main-content">
+        <div class="vuln-detail-grid">
+            <div class="vuln-detail-content">
+                <!-- Overview -->
+                <section class="vuln-section">
+                    <h2><i class="fas fa-info-circle"></i> Overview</h2>
+                    <p class="vuln-description"><%= vuln.description %></p>
+                </section>
+
+                <!-- Who -->
+                <% if (vuln.who) { %>
+                <section class="vuln-section">
+                    <h2><i class="fas fa-users"></i> Who Is Affected</h2>
+                    <p><%= vuln.who %></p>
+                </section>
+                <% } %>
+
+                <!-- Where -->
+                <% if (vuln.where) { %>
+                <section class="vuln-section">
+                    <h2><i class="fas fa-map-marker-alt"></i> Where It Exists</h2>
+                    <p><%= vuln.where %></p>
+                </section>
+                <% } %>
+
+                <!-- When -->
+                <% if (vuln.when) { %>
+                <section class="vuln-section">
+                    <h2><i class="fas fa-clock"></i> When It Was Found</h2>
+                    <p><%= vuln.when %></p>
+                </section>
+                <% } %>
+
+                <!-- How -->
+                <% if (vuln.how) { %>
+                <section class="vuln-section">
+                    <h2><i class="fas fa-cogs"></i> How It Works</h2>
+                    <p><%= vuln.how %></p>
+                </section>
+                <% } %>
+
+                <!-- Impact -->
+                <% if (vuln.impact) { %>
+                <section class="vuln-section">
+                    <h2><i class="fas fa-exclamation-triangle"></i> Impact</h2>
+                    <p><%= vuln.impact %></p>
+                </section>
+                <% } %>
+
+                <!-- Mitigation -->
+                <% if (vuln.mitigation) { %>
+                <section class="vuln-section vuln-mitigation">
+                    <h2><i class="fas fa-shield-alt"></i> Mitigation</h2>
+                    <p><%= vuln.mitigation %></p>
+                </section>
+                <% } %>
+
+                <!-- References -->
+                <% if (vuln.references && vuln.references.length > 0) { %>
+                <section class="vuln-section">
+                    <h2><i class="fas fa-link"></i> References</h2>
+                    <ul class="vuln-references-list">
+                        <% vuln.references.forEach(function(ref) { %>
+                        <li><a href="<%= ref.url %>" target="_blank" rel="noopener"><%= ref.title %> <i class="fas fa-external-link-alt"></i></a></li>
+                        <% }); %>
+                    </ul>
+                </section>
+                <% } %>
+            </div>
+
+            <!-- Sidebar -->
+            <aside class="vuln-detail-sidebar">
+                <!-- Impact Score -->
+                <div class="sidebar-card">
+                    <h3>Impact Score</h3>
+                    <div class="impact-score-display">
+                        <div class="impact-score-circle score-<%= vuln.impactScore >= 9 ? 'critical' : vuln.impactScore >= 7 ? 'high' : vuln.impactScore >= 4 ? 'medium' : 'low' %>">
+                            <span class="impact-score-value"><%= vuln.impactScore %></span>
+                            <span class="impact-score-max">/ 10</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Facts -->
+                <div class="sidebar-card">
+                    <h3>Quick Facts</h3>
+                    <dl class="sidebar-facts">
+                        <dt>Severity</dt>
+                        <dd><span class="severity-badge severity-<%= vuln.severity %> small"><%= vuln.severity.charAt(0).toUpperCase() + vuln.severity.slice(1) %></span></dd>
+
+                        <dt>Category</dt>
+                        <dd><a href="../taxonomy.html#cat-<%= vuln.category %>" class="sidebar-link"><%= taxonomy.categories.find(c => c.id === vuln.category)?.shortLabel || vuln.category %></a></dd>
+
+                        <dt>Exploitability</dt>
+                        <dd><span class="exploitability-badge exploitability-<%= vuln.exploitability %>"><%= vuln.exploitability.charAt(0).toUpperCase() + vuln.exploitability.slice(1) %></span></dd>
+
+                        <dt>Prevalence</dt>
+                        <dd><%= vuln.prevalence.charAt(0).toUpperCase() + vuln.prevalence.slice(1) %></dd>
+
+                        <dt>Affected</dt>
+                        <dd><%= vuln.affectedComponents.map(c => (taxonomy.affectedComponents.find(ac => ac.id === c) || {}).label || c).join(', ') %></dd>
+                    </dl>
+                </div>
+
+                <!-- Cisco AI Security Framework -->
+                <% if (vuln.ciscoObjectives && vuln.ciscoObjectives.length > 0) { %>
+                <div class="sidebar-card">
+                    <h3>Cisco AI Security Framework</h3>
+                    <ul class="cisco-objectives-list">
+                        <% vuln.ciscoObjectives.forEach(function(objId) { %>
+                        <% var obj = taxonomy.ciscoObjectives.find(o => o.id === objId); %>
+                        <% if (obj) { %>
+                        <li>
+                            <span class="cisco-obj-label"><%= obj.label %></span>
+                        </li>
+                        <% } %>
+                        <% }); %>
+                    </ul>
+                </div>
+                <% } %>
+
+                <!-- Tags -->
+                <div class="sidebar-card">
+                    <h3>Tags</h3>
+                    <div class="tags">
+                        <% vuln.tags.forEach(function(tagId) { %>
+                        <% var tagObj = taxonomy.tags.find(t => t.id === tagId); %>
+                        <span class="tag"><%= tagObj ? tagObj.label : tagId %></span>
+                        <% }); %>
+                    </div>
+                </div>
+
+                <!-- Original Report -->
+                <div class="sidebar-card">
+                    <a href="<%= vuln.url %>" target="_blank" rel="noopener" class="btn btn-full-width">
+                        <i class="fas fa-external-link-alt"></i> View Original Report
+                    </a>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="vuln-nav">
+            <% if (prevVuln) { %>
+            <a href="<%= prevVuln.id %>.html" class="vuln-nav-link vuln-nav-prev">
+                <i class="fas fa-arrow-left"></i>
+                <span>
+                    <small>Previous</small>
+                    <strong><%= prevVuln.title %></strong>
+                </span>
+            </a>
+            <% } else { %>
+            <div></div>
+            <% } %>
+            <a href="../index.html" class="vuln-nav-link vuln-nav-home">
+                <i class="fas fa-th"></i> All Vulnerabilities
+            </a>
+            <% if (nextVuln) { %>
+            <a href="<%= nextVuln.id %>.html" class="vuln-nav-link vuln-nav-next">
+                <span>
+                    <small>Next</small>
+                    <strong><%= nextVuln.title %></strong>
+                </span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+            <% } else { %>
+            <div></div>
+            <% } %>
+        </nav>
+    </main>
+
+    <%- include('../partials/footer', { basePath: '../' }) %>
+</body>
+</html>

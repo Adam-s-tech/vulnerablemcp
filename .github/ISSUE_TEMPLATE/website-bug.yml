@@ -1,0 +1,62 @@
+name: Website Bug / Improvement
+description: Report a bug or suggest an improvement for the vulnerablemcp.info website
+title: "[SITE] "
+labels: ["website", "bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve the website! Please describe the issue or improvement below.
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      description: Is this a bug report or a feature request?
+      options:
+        - Bug
+        - Improvement
+        - Content Update
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the bug or improvement in detail
+      placeholder: |
+        For bugs: What happened? What did you expect to happen?
+        For improvements: What would you like to see changed or added?
+    validations:
+      required: true
+
+  - type: input
+    id: page-url
+    attributes:
+      label: Page URL
+      description: Which page is affected? (if applicable)
+      placeholder: https://vulnerablemcp.info/...
+    validations:
+      required: false
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce (for bugs)
+      description: How can we reproduce this issue?
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See error
+    validations:
+      required: false
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser / Device
+      description: What browser and device are you using?
+      placeholder: e.g., Chrome 120, macOS 14
+    validations:
+      required: false

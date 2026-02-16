@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', { meta: meta, currentPage: 'report' }) %>
+</head>
+<body>
+    <%- include('../partials/header', { currentPage: 'report' }) %>
+    
+    <div class="hero">
+        <div class="container">
+            <h1>Report a Vulnerability</h1>
+            <p>Help improve MCP security by reporting vulnerabilities you've discovered or encountered</p>
+        </div>
+    </div>
+    
+    <main class="container" id="main-content">
+        <section class="report-intro">
+            <div class="note">
+                <strong>How it works:</strong> Fill out the form below and click "Submit to GitHub." This will open a pre-filled GitHub issue in a new tab. No backend or API keys are involved &mdash; your report goes directly to our GitHub repository for review. You'll need a <a href="https://github.com/signup" target="_blank" rel="noopener noreferrer">GitHub account</a> to submit.
+            </div>
+        </section>
+
+        <form id="vuln-report-form" class="report-form" novalidate>
+            <div class="form-section">
+                <h2>Vulnerability Details</h2>
+                
+                <div class="form-group">
+                    <label for="vuln-title" class="form-label">
+                        Vulnerability Title <span class="required">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="vuln-title" 
+                        name="title" 
+                        class="form-input" 
+                        placeholder="e.g., Tool Poisoning via Malicious MCP Server"
+                        required
+                    />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="vuln-severity" class="form-label">
+                            Severity <span class="required">*</span>
+                        </label>
+                        <select id="vuln-severity" name="severity" class="form-select" required>
+                            <option value="">Select severity...</option>
+                            <option value="Critical">Critical</option>
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                            <option value="Info">Info</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vuln-category" class="form-label">
+                            Category <span class="required">*</span>
+                        </label>
+                        <select id="vuln-category" name="category" class="form-select" required>
+                            <option value="">Select category...</option>
+                            <option value="Prompt Injection / Instruction Boundary Failures">Prompt Injection</option>
+                            <option value="Input Validation / Sanitization Failures">Input Validation</option>
+                            <option value="Authentication / Authorization Failures">Auth Failures</option>
+                            <option value="Session Management Design Flaws">Session Mgmt</option>
+                            <option value="Integrity / Verification Control Failures">Integrity</option>
+                            <option value="Trust Model Design Flaws">Trust Model</option>
+                            <option value="Credential Management Failures">Credentials</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="vuln-reporter" class="form-label">
+                            Reported By <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="vuln-reporter" 
+                            name="reporter" 
+                            class="form-input" 
+                            placeholder="Your name or research team"
+                            required
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vuln-date" class="form-label">
+                            Discovery Date <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="date" 
+                            id="vuln-date" 
+                            name="date" 
+                            class="form-input"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="vuln-exploitability" class="form-label">Exploitability</label>
+                        <select id="vuln-exploitability" name="exploitability" class="form-select">
+                            <option value="">Select exploitability...</option>
+                            <option value="Trivial">Trivial</option>
+                            <option value="Easy">Easy</option>
+                            <option value="Moderate">Moderate</option>
+                            <option value="Difficult">Difficult</option>
+                            <option value="Theoretical">Theoretical</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vuln-impact" class="form-label">Impact Score (1-10)</label>
+                        <input 
+                            type="number" 
+                            id="vuln-impact" 
+                            name="impactScore" 
+                            class="form-input" 
+                            min="1" 
+                            max="10" 
+                            placeholder="e.g., 8"
+                        />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Affected Components</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="components" value="MCP Client"> MCP Client
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="components" value="MCP Server"> MCP Server
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="components" value="MCP Protocol"> MCP Protocol
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="components" value="MCP Ecosystem"> MCP Ecosystem
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-tags" class="form-label">Tags</label>
+                    <input 
+                        type="text" 
+                        id="vuln-tags" 
+                        name="tags" 
+                        class="form-input" 
+                        placeholder="e.g., prompt-injection, data-exfiltration, hidden-instructions"
+                    />
+                    <span class="form-hint">Comma-separated tags from the <a href="taxonomy.html#tags" target="_blank">standardized vocabulary</a></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-source" class="form-label">Source URL</label>
+                    <input 
+                        type="url" 
+                        id="vuln-source" 
+                        name="source" 
+                        class="form-input" 
+                        placeholder="https://example.com/vulnerability-writeup"
+                    />
+                    <span class="form-hint">Link to the original research, advisory, or writeup</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-cve" class="form-label">CVE ID(s)</label>
+                    <input 
+                        type="text" 
+                        id="vuln-cve" 
+                        name="cve" 
+                        class="form-input" 
+                        placeholder="e.g., CVE-2025-12345"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-affected" class="form-label">Affected MCP Server(s)</label>
+                    <input 
+                        type="text" 
+                        id="vuln-affected" 
+                        name="affected" 
+                        class="form-input" 
+                        placeholder="e.g., github-mcp, whatsapp-mcp, filesystem-server"
+                    />
+                    <span class="form-hint">Specific MCP server implementations affected (if known)</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="vuln-description" class="form-label">
+                        Description <span class="required">*</span>
+                    </label>
+                    <textarea 
+                        id="vuln-description" 
+                        name="description" 
+                        class="form-textarea" 
+                        rows="8" 
+                        placeholder="Describe the vulnerability in detail:&#10;- What is the attack vector?&#10;- Who is affected?&#10;- Where does it exist in the MCP architecture?&#10;- How does the attack work?&#10;- What is the impact?&#10;- Are there known mitigations?"
+                        required
+                    ></textarea>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Preview</h2>
+                <p class="form-hint" style="margin-bottom: 1rem;">This is how your report will appear in the GitHub issue.</p>
+                <div id="issue-preview" class="issue-preview">
+                    <p class="preview-placeholder">Fill in the fields above to see a preview of your GitHub issue.</p>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fab fa-github"></i> Submit to GitHub
+                </button>
+                <button type="reset" class="btn btn-secondary btn-lg">
+                    Clear Form
+                </button>
+            </div>
+        </form>
+
+        <section class="report-alternatives">
+            <h2>Other Ways to Contribute</h2>
+            <div class="alternatives-grid">
+                <div class="alternative-card">
+                    <h3><i class="fas fa-code-branch"></i> Direct Pull Request</h3>
+                    <p>If you're comfortable with JSON and Git, you can submit a PR directly to <code>data/vulnerabilities.json</code> following the v2 schema.</p>
+                    <a href="https://github.com/vineethsai/vulnerablemcp" target="_blank" rel="noopener noreferrer" class="btn btn-outline">View Repository</a>
+                </div>
+                <div class="alternative-card">
+                    <h3><i class="fas fa-book"></i> Contribution Guide</h3>
+                    <p>Read the full guide for detailed instructions on the schema, taxonomy, validation, and review process.</p>
+                    <a href="https://github.com/vineethsai/vulnerablemcp/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Read Guide</a>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <%- include('../partials/footer') %>
+
+    <script>
+    (function() {
+        var form = document.getElementById('vuln-report-form');
+        var preview = document.getElementById('issue-preview');
+        var fields = ['vuln-title', 'vuln-severity', 'vuln-category', 'vuln-reporter', 'vuln-date', 'vuln-exploitability', 'vuln-impact', 'vuln-tags', 'vuln-source', 'vuln-cve', 'vuln-affected', 'vuln-description'];
+
+        function getValues() {
+            var components = [];
+            document.querySelectorAll('input[name="components"]:checked').forEach(function(cb) {
+                components.push(cb.value);
+            });
+            return {
+                title: document.getElementById('vuln-title').value.trim(),
+                severity: document.getElementById('vuln-severity').value,
+                category: document.getElementById('vuln-category').value,
+                reporter: document.getElementById('vuln-reporter').value.trim(),
+                date: document.getElementById('vuln-date').value,
+                exploitability: document.getElementById('vuln-exploitability').value,
+                impactScore: document.getElementById('vuln-impact').value,
+                components: components,
+                tags: document.getElementById('vuln-tags').value.trim(),
+                source: document.getElementById('vuln-source').value.trim(),
+                cve: document.getElementById('vuln-cve').value.trim(),
+                affected: document.getElementById('vuln-affected').value.trim(),
+                description: document.getElementById('vuln-description').value.trim()
+            };
+        }
+
+        function buildMarkdownBody(v) {
+            var lines = [];
+            lines.push('### Vulnerability Title');
+            lines.push(v.title || '_Not provided_');
+            lines.push('');
+            lines.push('### Severity');
+            lines.push(v.severity || '_Not selected_');
+            lines.push('');
+            lines.push('### Category');
+            lines.push(v.category || '_Not selected_');
+            lines.push('');
+            lines.push('### Reported By');
+            lines.push(v.reporter || '_Not provided_');
+            lines.push('');
+            lines.push('### Discovery Date');
+            lines.push(v.date || '_Not provided_');
+            lines.push('');
+            if (v.exploitability) {
+                lines.push('### Exploitability');
+                lines.push(v.exploitability);
+                lines.push('');
+            }
+            if (v.impactScore) {
+                lines.push('### Impact Score');
+                lines.push(v.impactScore + '/10');
+                lines.push('');
+            }
+            if (v.components.length > 0) {
+                lines.push('### Affected Components');
+                lines.push(v.components.join(', '));
+                lines.push('');
+            }
+            if (v.tags) {
+                lines.push('### Tags');
+                lines.push(v.tags);
+                lines.push('');
+            }
+            if (v.source) {
+                lines.push('### Source URL');
+                lines.push(v.source);
+                lines.push('');
+            }
+            if (v.cve) {
+                lines.push('### CVE ID(s)');
+                lines.push(v.cve);
+                lines.push('');
+            }
+            if (v.affected) {
+                lines.push('### Affected MCP Server(s)');
+                lines.push(v.affected);
+                lines.push('');
+            }
+            lines.push('### Description');
+            lines.push(v.description || '_Not provided_');
+            return lines.join('\n');
+        }
+
+        function escapeHtml(str) {
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        }
+
+        function updatePreview() {
+            var v = getValues();
+            var hasContent = v.title || v.severity || v.category || v.reporter || v.date || v.description;
+            
+            if (!hasContent) {
+                preview.innerHTML = '<p class="preview-placeholder">Fill in the fields above to see a preview of your GitHub issue.</p>';
+                return;
+            }
+
+            var html = '<div class="preview-content">';
+            html += '<div class="preview-title">[VULN] ' + escapeHtml(v.title || 'Untitled') + '</div>';
+            html += '<hr/>';
+            html += '<div class="preview-body">';
+            
+            html += '<h4>Vulnerability Title</h4><p>' + escapeHtml(v.title || 'Not provided') + '</p>';
+            html += '<h4>Severity</h4><p>' + (v.severity ? '<span class="severity-badge severity-' + v.severity.toLowerCase() + '">' + escapeHtml(v.severity) + '</span>' : '<em>Not selected</em>') + '</p>';
+            html += '<h4>Category</h4><p>' + escapeHtml(v.category || 'Not selected') + '</p>';
+            html += '<h4>Reported By</h4><p>' + escapeHtml(v.reporter || 'Not provided') + '</p>';
+            html += '<h4>Discovery Date</h4><p>' + escapeHtml(v.date || 'Not provided') + '</p>';
+            
+            if (v.exploitability) {
+                html += '<h4>Exploitability</h4><p><span class="exploitability-badge exploitability-' + v.exploitability.toLowerCase() + '">' + escapeHtml(v.exploitability) + '</span></p>';
+            }
+            if (v.impactScore) {
+                html += '<h4>Impact Score</h4><p>' + escapeHtml(v.impactScore) + '/10</p>';
+            }
+            if (v.components.length > 0) {
+                html += '<h4>Affected Components</h4><p>' + escapeHtml(v.components.join(', ')) + '</p>';
+            }
+            if (v.tags) {
+                html += '<h4>Tags</h4><div class="tags" style="margin-bottom:12px">';
+                v.tags.split(',').forEach(function(t) {
+                    t = t.trim();
+                    if (t) html += '<span class="tag">' + escapeHtml(t) + '</span>';
+                });
+                html += '</div>';
+            }
+            if (v.source) {
+                html += '<h4>Source URL</h4><p><a href="' + escapeHtml(v.source) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(v.source) + '</a></p>';
+            }
+            if (v.cve) {
+                html += '<h4>CVE ID(s)</h4><p><code>' + escapeHtml(v.cve) + '</code></p>';
+            }
+            if (v.affected) {
+                html += '<h4>Affected MCP Server(s)</h4><p>' + escapeHtml(v.affected) + '</p>';
+            }
+            
+            html += '<h4>Description</h4><p>' + escapeHtml(v.description || 'Not provided').replace(/\n/g, '<br/>') + '</p>';
+            html += '</div></div>';
+
+            preview.innerHTML = html;
+        }
+
+        fields.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', updatePreview);
+                el.addEventListener('change', updatePreview);
+            }
+        });
+
+        document.querySelectorAll('input[name="components"]').forEach(function(cb) {
+            cb.addEventListener('change', updatePreview);
+        });
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var v = getValues();
+            if (!v.title || !v.severity || !v.category || !v.reporter || !v.date || !v.description) {
+                var firstInvalid = form.querySelector(':invalid');
+                if (firstInvalid) {
+                    firstInvalid.focus();
+                    firstInvalid.classList.add('form-error');
+                }
+                return;
+            }
+
+            var issueTitle = '[VULN] ' + v.title;
+            var issueBody = buildMarkdownBody(v);
+
+            var url = 'https://github.com/vineethsai/vulnerablemcp/issues/new'
+                + '?template=vulnerability-report.yml'
+                + '&title=' + encodeURIComponent(issueTitle)
+                + '&body=' + encodeURIComponent(issueBody);
+
+            window.open(url, '_blank', 'noopener,noreferrer');
+        });
+
+        form.addEventListener('reset', function() {
+            setTimeout(function() {
+                preview.innerHTML = '<p class="preview-placeholder">Fill in the fields above to see a preview of your GitHub issue.</p>';
+                var errorFields = form.querySelectorAll('.form-error');
+                errorFields.forEach(function(el) { el.classList.remove('form-error'); });
+            }, 10);
+        });
+
+        var today = new Date().toISOString().split('T')[0];
+        document.getElementById('vuln-date').value = today;
+    })();
+    </script>
+</body>
+</html>

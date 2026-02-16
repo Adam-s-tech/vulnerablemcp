@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', { meta: meta, currentPage: 'taxonomy' }) %>
+</head>
+<body>
+    <%- include('../partials/header', { currentPage: 'taxonomy' }) %>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Vulnerability Taxonomy</h1>
+            <p>Structured classification framework for MCP security vulnerabilities, mapped to the Cisco AI Security Framework</p>
+        </div>
+    </section>
+
+    <main class="container taxonomy-main" id="main-content">
+        <!-- Categories -->
+        <section class="taxonomy-section" id="categories">
+            <h2><i class="fas fa-folder-open"></i> Vulnerability Categories</h2>
+            <p class="taxonomy-intro">Each vulnerability is classified into one primary category based on its root cause. Click a category heading to filter the main database.</p>
+            <div class="taxonomy-grid">
+                <% taxonomy.categories.forEach(function(cat) { %>
+                <% var count = vulnerabilities.filter(v => v.category === cat.id).length; %>
+                <div class="taxonomy-card" id="cat-<%= cat.id %>">
+                    <div class="taxonomy-card-header">
+                        <h3><a href="index.html?category=<%= cat.id %>" style="color: inherit; text-decoration: none;"><%= cat.label %></a></h3>
+                        <span class="taxonomy-count"><a href="index.html?category=<%= cat.id %>" style="color: inherit; text-decoration: none;"><%= count %> vuln<%= count !== 1 ? 's' : '' %></a></span>
+                    </div>
+                    <p><%= cat.description %></p>
+                    <% if (count > 0) { %>
+                    <div class="taxonomy-card-vulns">
+                        <% vulnerabilities.filter(v => v.category === cat.id).forEach(function(v) { %>
+                        <a href="vuln/<%= v.id %>.html" class="taxonomy-vuln-link">
+                            <span class="severity-dot severity-dot-<%= v.severity %>"></span>
+                            <%= v.title %>
+                        </a>
+                        <% }); %>
+                    </div>
+                    <% } %>
+                </div>
+                <% }); %>
+            </div>
+        </section>
+
+        <!-- Severity Scale -->
+        <section class="taxonomy-section" id="severity">
+            <h2><i class="fas fa-thermometer-half"></i> Severity Rating Scale</h2>
+            <p class="taxonomy-intro">Severity is assessed based on exploitability, impact scope, and real-world risk.</p>
+            <div class="severity-scale">
+                <% taxonomy.severities.forEach(function(sev) { %>
+                <% var count = vulnerabilities.filter(v => v.severity === sev.id).length; %>
+                <a href="index.html?severity=<%= sev.id %>" class="severity-scale-item" style="text-decoration: none; color: inherit;">
+                    <span class="severity-badge severity-<%= sev.id %>"><%= sev.label %></span>
+                    <span class="severity-scale-desc"><%= sev.description %></span>
+                    <span class="taxonomy-count"><%= count %></span>
+                </a>
+                <% }); %>
+            </div>
+        </section>
+
+        <!-- Exploitability -->
+        <section class="taxonomy-section" id="exploitability">
+            <h2><i class="fas fa-bolt"></i> Exploitability Levels</h2>
+            <p class="taxonomy-intro">How difficult it is for an attacker to exploit the vulnerability in practice.</p>
+            <div class="severity-scale">
+                <% taxonomy.exploitability.forEach(function(exp) { %>
+                <% var count = vulnerabilities.filter(v => v.exploitability === exp.id).length; %>
+                <div class="severity-scale-item">
+                    <span class="exploitability-badge exploitability-<%= exp.id %>"><%= exp.label %></span>
+                    <span class="severity-scale-desc"><%= exp.description %></span>
+                    <span class="taxonomy-count"><%= count %></span>
+                </div>
+                <% }); %>
+            </div>
+        </section>
+
+        <!-- Cisco AI Security Framework -->
+        <section class="taxonomy-section" id="cisco">
+            <h2><i class="fas fa-shield-alt"></i> Cisco AI Security Framework Mapping</h2>
+            <p class="taxonomy-intro">Vulnerabilities mapped to attacker objectives from the <a href="https://blogs.cisco.com/security/evaluating-ai-agent-security-a-framework-for-risk-assessment" target="_blank" rel="noopener">Cisco AI Security Framework</a>.</p>
+            <div class="cisco-mapping-grid">
+                <% taxonomy.ciscoObjectives.forEach(function(obj) { %>
+                <% var mapped = vulnerabilities.filter(v => v.ciscoObjectives && v.ciscoObjectives.includes(obj.id)); %>
+                <div class="cisco-mapping-card">
+                    <div class="cisco-mapping-header">
+                        <h3><%= obj.label %></h3>
+                        <span class="taxonomy-count"><%= mapped.length %></span>
+                    </div>
+                    <p><%= obj.description %></p>
+                    <% if (mapped.length > 0) { %>
+                    <div class="taxonomy-card-vulns">
+                        <% mapped.forEach(function(v) { %>
+                        <a href="vuln/<%= v.id %>.html" class="taxonomy-vuln-link">
+                            <span class="severity-dot severity-dot-<%= v.severity %>"></span>
+                            <%= v.title %>
+                        </a>
+                        <% }); %>
+                    </div>
+                    <% } %>
+                </div>
+                <% }); %>
+            </div>
+        </section>
+
+        <!-- Tags -->
+        <section class="taxonomy-section" id="tags">
+            <h2><i class="fas fa-tags"></i> Tag Vocabulary</h2>
+            <p class="taxonomy-intro">Standardized tags for cross-cutting concerns and attack characteristics.</p>
+            <div class="tag-cloud">
+                <% taxonomy.tags.forEach(function(tag) { %>
+                <% var count = vulnerabilities.filter(v => v.tags && v.tags.includes(tag.id)).length; %>
+                <% if (count > 0) { %>
+                <a href="index.html?q=<%= encodeURIComponent(tag.label) %>" class="tag-cloud-item" title="<%= count %> vulnerability<%= count !== 1 ? 'ies' : '' %>" style="text-decoration: none; color: inherit;">
+                    <%= tag.label %>
+                    <span class="tag-count"><%= count %></span>
+                </a>
+                <% } else { %>
+                <span class="tag-cloud-item tag-unused" title="0 vulnerabilities">
+                    <%= tag.label %>
+                </span>
+                <% } %>
+                <% }); %>
+            </div>
+        </section>
+
+        <!-- Affected Components -->
+        <section class="taxonomy-section" id="components">
+            <h2><i class="fas fa-puzzle-piece"></i> Affected Components</h2>
+            <p class="taxonomy-intro">Which parts of the MCP architecture are impacted.</p>
+            <div class="component-grid">
+                <% taxonomy.affectedComponents.forEach(function(comp) { %>
+                <% var count = vulnerabilities.filter(v => v.affectedComponents && v.affectedComponents.includes(comp.id)).length; %>
+                <div class="component-card">
+                    <h3><%= comp.label %></h3>
+                    <p><%= comp.description %></p>
+                    <span class="taxonomy-count"><%= count %> vuln<%= count !== 1 ? 's' : '' %></span>
+                </div>
+                <% }); %>
+            </div>
+        </section>
+    </main>
+
+    <%- include('../partials/footer') %>
+</body>
+</html>
