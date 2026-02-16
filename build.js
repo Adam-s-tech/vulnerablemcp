@@ -216,14 +216,18 @@ async function build() {
     if (fs.existsSync(src)) fs.copyFileSync(src, path.join(DIST, f));
   }
 
-  for (const f of fs.readdirSync(ROOT)) {
-    if (f.endsWith('.png') || f.endsWith('.jpg') || f.endsWith('.jpeg')) {
-      fs.copyFileSync(path.join(ROOT, f), path.join(DIST, f));
+  const imagesDir = path.join(ROOT, 'assets', 'images');
+  if (fs.existsSync(imagesDir)) {
+    for (const f of fs.readdirSync(imagesDir)) {
+      if (f.endsWith('.png') || f.endsWith('.jpg') || f.endsWith('.jpeg')) {
+        fs.copyFileSync(path.join(imagesDir, f), path.join(DIST, f));
+      }
     }
   }
 
-  const securityContent = extractSecurityMainContent(path.join(ROOT, 'security.html'));
-  const etdiContent = extractEtdiMainContent(path.join(ROOT, 'etdi-security.html'));
+  const contentDir = path.join(ROOT, 'src', 'content');
+  const securityContent = extractSecurityMainContent(path.join(contentDir, 'security.html'));
+  const etdiContent = extractEtdiMainContent(path.join(contentDir, 'etdi-security.html'));
   const sortedVulns = [...vulnerabilities].sort((a, b) => b.date.localeCompare(a.date));
   const stats = computeStats(sortedVulns, taxonomy);
 

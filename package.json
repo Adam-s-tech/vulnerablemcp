@@ -7,8 +7,7 @@
     "build": "node build.js",
     "validate": "node scripts/validate.js",
     "check-links": "node scripts/check-links.js",
-    "dev": "node build.js && node server.js",
-    "migrate": "node scripts/migrate-md-to-json.js"
+    "dev": "node build.js && node server.js"
   },
   "dependencies": {
     "ejs": "^3.1.10"

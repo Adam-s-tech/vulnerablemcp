@@ -30,7 +30,7 @@ If you're comfortable with JSON and Git, you can submit a PR directly:
   "title": "Your Vulnerability Title",
   "alternativeNames": ["Other Name for This Vuln"],
   "severity": "critical|high|medium|low|info",
-  "category": "prompt-injection|input-validation|authentication|session-management|integrity|trust-model|credential-management",
+  "category": "prompt-injection|input-validation|authentication|session-management|integrity|trust-model|credential-management|network-security",
   "impactScore": 8,
   "exploitability": "trivial|easy|moderate|difficult|theoretical",
   "affectedComponents": ["client", "server", "protocol", "ecosystem"],
@@ -62,7 +62,7 @@ If you're comfortable with JSON and Git, you can submit a PR directly:
 All categorical fields reference the taxonomy in `data/taxonomy.json`. Valid values:
 
 - **Severity**: critical, high, medium, low, info
-- **Category**: prompt-injection, input-validation, authentication, session-management, integrity, trust-model, credential-management
+- **Category**: prompt-injection, input-validation, authentication, session-management, integrity, trust-model, credential-management, network-security
 - **Exploitability**: trivial, easy, moderate, difficult, theoretical
 - **Affected Components**: client, server, protocol, ecosystem
 - **Prevalence**: widespread, common, emerging, rare
